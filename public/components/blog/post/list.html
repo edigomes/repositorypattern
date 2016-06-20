@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-md-6">
+        <form name="form-contact" class="form-validation ng-pristine ng-invalid ng-invalid-required ng-valid-email ng-valid-url">
+        <div class="panel panel-default">
+            <div class="panel-heading bg-white">
+                <span class="font-bold">Post {{ post.id }}</span>
+            </div>
+            <div class="panel-body">                   
+                <div class="row">
+                    <div class="col-sm-6 m-b">
+                        <label>Title</label>
+                        <input type="text" class="form-control ng-pristine ng-untouched ng-invalid ng-invalid-required" ng-model="post.title" required="" tabindex="0" aria-required="true" aria-invalid="true">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 m-b">
+                        <label>Post</label>
+                        <textarea type="text" class="form-control ng-pristine ng-untouched ng-valid-email ng-invalid ng-invalid-required" ng-model="post.post" required="" tabindex="0" aria-required="true" aria-invalid="true"></textarea>
+                    </div>
+                </div>
+            </div>
+            <footer class="panel-footer text-right">
+                <button type="submit" class="btn btn-info" ng-click="save()">Salvar</button>
+            </footer>
+        </div>
+    </form>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">The basics</div>  
+    <table st-table="data" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Título</th>
+                 <th>Post</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in data" st-select-row="row">
+                <td>{{ row.id }}</td>
+                <td>{{ row.title }}</td>
+                <td>{{ row.post }}</td>
+                <td>
+                    <button class="btn btn-primary" ng-click="edit(row.id)">Edit</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

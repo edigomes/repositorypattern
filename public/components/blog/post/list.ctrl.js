@@ -1,17 +1,58 @@
-app.controller("PostCtrl", function ($scope, $resource) {
-
-    var Post = r = $resource('/api/post/:id', {id: "@id"}, {
-        getArray: {
-            method:'GET', isArray: true
-        },
-        save: {
-            method:'PUT'
-        },
-        create: {
-            method:'POST'
-        }
-    });
+// Fábrica de Api
+app.factory("ApiFactory", function($resource) {
     
+    // Gera um objeto vazio
+    var ApiFactory = {};
+    
+    // Adiciona a função getApi para trazer a API com a url correta
+    ApiFactory.getApi = function(url) {
+
+        var resource = $resource(url, {id: "@id"}, {
+            getArray: {
+                method: 'GET', isArray: true
+            },
+            update: {
+                method: 'PUT'
+            },
+            create: {
+                method: 'POST'
+            }
+        });
+
+        // Sobreescreve a função $save para tratar o create ou save quando
+        // não existir id no objeto
+        resource.prototype.$save = function (sucess, error) {
+            if (this.id) {
+                this.$update(function () {
+                    sucess();
+                }, function () {
+                    error();
+                });
+            } else {
+                this.$create(function () {
+                    sucess();
+                }, function () {
+                    error();
+                });
+            }
+        };
+        
+        return resource;
+        
+    };
+    
+    // Retorna para o injeção do angular
+    return ApiFactory;
+    
+});
+
+// Gera a API do POST (tanto faz usar service ou factory: pesquisar para entender a diferença)
+app.service('Post', function(ApiFactory) {
+    return ApiFactory.getApi('/api/post/:id');
+});
+
+app.controller("PostCtrl", function ($scope, Post) {
+
     $scope.post = new Post;
     
     $scope.loadPosts = function() {
@@ -27,15 +68,9 @@ app.controller("PostCtrl", function ($scope, $resource) {
     };
     
     $scope.save = function() {
-        if ($scope.post.id) {
-            $scope.post.$save(function() {
-                $scope.loadPosts();
-            });
-        } else {
-            $scope.post.$create(function() {
-                $scope.loadPosts();
-            });
-        }
+        $scope.post.$save(function () {
+            $scope.loadPosts();
+        });
     };
     
     $scope.loadPosts();
